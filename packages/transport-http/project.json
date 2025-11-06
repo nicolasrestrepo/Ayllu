@@ -1,0 +1,36 @@
+{
+  "name": "transport-http",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/transport-http/src",
+  "projectType": "library",
+  "tags": ["scope:transport", "adapter:http"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/transport-http",
+        "main": "packages/transport-http/src/index.ts",
+        "tsConfig": "packages/transport-http/tsconfig.lib.json",
+        "assets": ["packages/transport-http/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/transport-http/**/*.ts",
+          "packages/transport-http/**/*.tsx"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/transport-http/vite.config.ts",
+        "passWithNoTests": false
+      }
+    }
+  }
+}
