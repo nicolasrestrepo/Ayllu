@@ -1,0 +1,36 @@
+{
+  "name": "storage-indexeddb",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/storage-indexeddb/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/storage-indexeddb",
+        "main": "packages/storage-indexeddb/src/index.ts",
+        "tsConfig": "packages/storage-indexeddb/tsconfig.lib.json",
+        "assets": ["packages/storage-indexeddb/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/storage-indexeddb/**/*.ts",
+          "packages/storage-indexeddb/**/*.tsx"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/storage-indexeddb/vite.config.ts",
+        "passWithNoTests": false
+      }
+    }
+  }
+}
