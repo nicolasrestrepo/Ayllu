@@ -1,7 +1,7 @@
 # Ayllu SDK Monorepo
 
 <p align="center">
-  <img src="./docs/assets/ayllu-logo.svg" alt="Ayllu logo" width="220" />
+  <img src="./assets/branding/ayllu-logo.png" alt="Ayllu logo" width="220" />
 </p>
 
 Ayllu is a frontend-first, vendor-agnostic observability and logging SDK built for resilience, privacy, and portability. Inspired by *Building a Vendor-Agnostic Logger for a Frontend Application*, the project unifies logging, batching, enrichment, storage, and transport so that any web or mobile app can emit structured telemetry—online or offline—and forward it to the observability vendor of choice.
@@ -17,6 +17,8 @@ Ayllu is a frontend-first, vendor-agnostic observability and logging SDK built f
 ## Repository Structure
 
 ```
+assets/
+  branding/           # Logos and marketing visuals
 packages/
   core/               # Logger factory, domain model, pipelines, policies
   transport-http/     # Fetch-based transport adapter
@@ -25,7 +27,8 @@ packages/
 examples/
   next-app/           # Next.js 15 demo with proxy API route
 docs/
-  assets/             # Repository visuals (logo, diagrams)
+  architecture.md     # System overview and data flow
+  policies.md         # Privacy, sampling and governance guidance
 ```
 
 ## Packages at a Glance
@@ -38,7 +41,7 @@ docs/
 | `packages/react` | `@ayllu/react` | React context, provider, and `useLogger()` hook for ergonomic integration. |
 | `examples/next-app` | — | Reference Next.js 15 App Router implementation that wires the SDK, persists offline data, and forwards logs through a proxy API route. |
 
-Each package README documents configuration, exported APIs, and extension points in depth.
+Each package README documents configuration, exported APIs, and extension points in depth. For additional reference material, see the guides in [`docs/`](./docs).
 
 ## Design Principles & Patterns
 
