@@ -1,4 +1,4 @@
-# Ayllu SDK Monorepo
+# Ayllu
 
 <p align="center">
   <img src="./assets/branding/ayllu-logo.png" alt="Ayllu logo" width="220" />
