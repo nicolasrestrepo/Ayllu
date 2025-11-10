@@ -12,6 +12,7 @@ import {
   useMemo,
   useRef,
   type PropsWithChildren,
+  type ComponentType,
 } from 'react';
 
 const LoggerContext = createContext<Logger | null>(null);
@@ -96,7 +97,7 @@ export const useLoggerEvent = <T extends LoggerEventType>(
 };
 
 export const withLogger = <P extends { logger: Logger }>(
-  Component: React.ComponentType<P>
+  Component: ComponentType<P>
 ) => {
   return function WithLogger(props: Omit<P, 'logger'>) {
     const logger = useLogger();
