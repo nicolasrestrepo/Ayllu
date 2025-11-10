@@ -1,1 +1,5 @@
 autoInstallPeers: true
+packages:
+  - packages/**
+  - examples/next-app
+  - docs/site
