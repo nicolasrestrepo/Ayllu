@@ -1,3 +1,10 @@
-export function core(): string {
-  return 'core';
-}
+export { createLogger } from './logger';
+export {
+  MemoryStorage,
+  createMemoryStorage,
+} from './memory-storage';
+export {
+  defaultPolicies,
+  runPolicies,
+} from './policies';
+export * from './types';
