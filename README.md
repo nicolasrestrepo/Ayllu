@@ -43,6 +43,13 @@ docs/
 
 Each package README documents configuration, exported APIs, and extension points in depth. For additional reference material, see the guides in [`docs/`](./docs).
 
+## Documentation
+
+- Interactive docs live under `docs/site` (Docusaurus).
+  - `pnpm --filter docs-site start` – develop locally.
+  - `pnpm --filter docs-site build` – generate static assets.
+  - `pnpm --filter docs-site serve` – preview the production build.
+
 ## Design Principles & Patterns
 
 - **Clean Architecture & SOLID** – core abstractions (`Transport`, `StorageLike`, `Policy`, `Enricher`) isolate infrastructure from domain logic.

@@ -1,9 +1,69 @@
 {
-  "name": "examples",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples",
+  "name": "examples-next-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/next-app/src",
   "projectType": "application",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project examples --web",
-  "targets": {}
+  "tags": ["scope:examples"],
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "examples/next-app",
+        "outputPath": "dist/examples/next-app"
+      },
+      "configurations": {
+        "development": {
+          "root": "examples/next-app",
+          "outputPath": "dist/examples/next-app"
+        },
+        "production": {
+          "root": "examples/next-app",
+          "outputPath": "dist/examples/next-app"
+        }
+      }
+    },
+    "dev": {
+      "executor": "@nx/next:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "examples-next-app:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "examples-next-app:build:development"
+        },
+        "production": {
+          "buildTarget": "examples-next-app:build:production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "examples-next-app:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "examples-next-app:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["examples/next-app/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/examples/next-app"],
+      "options": {
+        "jestConfig": "examples/next-app/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
 }
