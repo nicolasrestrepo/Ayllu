@@ -1,0 +1,36 @@
+name: Validate Changesets
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate Changesets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Validate changesets
+        run: pnpm changeset status
+
+      - name: Check for changeset
+        run: |
+          if [ -z "$(git diff --name-only origin/main...HEAD | grep -E '^\.changeset/.*\.md$')" ]; then
+            echo "⚠️  No changeset found! Please add a changeset by running 'pnpm changeset'"
+            exit 1
+          fi
+

@@ -127,6 +127,16 @@ pnpm nx serve examples-next-app # start the Next.js demo (see example README)
 5. Batcher flushes to the selected transport with retry + backoff.
 6. Transport forwards data to a proxy endpoint (`/api/logs` in the Next.js example). The proxy can enforce authentication, rate limiting, or vendor fan-out.
 
+## CI/CD & Releases
+
+The repository uses [Changesets](https://github.com/changesets/changesets) for version management and GitHub Actions for automation:
+
+- **CI** – Lints, tests, and builds on every PR
+- **Changeset validation** – Ensures PRs include versioning information
+- **Automated releases** – Creates version PRs and publishes to npm on merge
+
+See the [Release Guide](docs/site/docs/release-guide.md) for detailed instructions on versioning and publishing packages.
+
 ## Contributing & Roadmap
 
 - Add transports (`@ayllu/transport-otlp`, `@ayllu/transport-loki`) using the adapter contract.

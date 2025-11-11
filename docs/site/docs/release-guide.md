@@ -54,13 +54,50 @@ pnpm publish --filter @ayllu/core
 cd packages/core && npm publish --access public
 ```
 
-## 4. Automate in CI
+## 4. Automated releases with GitHub Actions
 
-For automation, wire the [Changesets GitHub Action](https://github.com/changesets/action) or an Nx release pipeline:
+The repository includes GitHub Actions workflows that automate the entire release process:
 
-1. Run `pnpm changeset version` on merge to `main`.
-2. Let CI build/test.
-3. Execute `pnpm changeset publish` with an npm token.
+### Workflows
+
+- **CI** (`.github/workflows/ci.yml`) – Runs on every PR and push to `main`:
+  - Lints all packages
+  - Runs tests
+  - Builds all packages
+
+- **Validate Changesets** (`.github/workflows/changeset-validator.yml`) – Runs on PRs:
+  - Ensures every PR includes a changeset file
+  - Validates changeset format
+
+- **Release** (`.github/workflows/release.yml`) – Runs on pushes to `main`:
+  - Detects pending changesets
+  - Creates a "Version Packages" PR with version bumps
+  - When the PR is merged, automatically publishes to npm
+
+### Setup
+
+1. **Add npm token to GitHub Secrets**:
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Add a new secret named `NPM_TOKEN` with your npm access token
+   - Generate a token at https://www.npmjs.com/settings/YOUR_USERNAME/access-tokens
+
+2. **Workflow**:
+   - Create a PR with your changes and a changeset (`pnpm changeset`)
+   - The validator ensures a changeset exists
+   - After merge to `main`, the release workflow creates a version PR
+   - Merge the version PR to trigger automatic publishing to npm
+
+### Manual release (optional)
+
+You can still release manually if needed:
+
+```bash
+pnpm version-packages
+git add -A
+git commit -m "chore: release packages"
+git push --follow-tags
+pnpm publish-packages
+```
 
 This keeps your local workflow lightweight while ensuring reproducible releases in continuous delivery.
 
