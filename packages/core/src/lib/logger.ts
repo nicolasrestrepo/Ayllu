@@ -5,6 +5,7 @@ import {
   mergeContexts,
   randomId,
   sleep,
+  utf8Length,
 } from './utils';
 import type {
   Enricher,
@@ -17,6 +18,7 @@ import type {
   LoggerEventListener,
   LoggerEventType,
   LoggerOptions,
+  PayloadOptions,
   PolicyResult,
   Sampler,
   StorageLike,
@@ -142,6 +144,36 @@ const enforceSchema = (schema: LoggerOptions['schema'], input: LogInput) => {
   return schema.parse(input);
 };
 
+const enforcePayloadLimits = (
+  log: LogRecord,
+  payload?: PayloadOptions
+):
+  | { ok: true }
+  | { ok: false; reason: string; details?: { size: number; limit: number } } => {
+  const limit = payload?.maxRecordSizeBytes;
+  if (!limit || !Number.isFinite(limit) || limit <= 0) {
+    return { ok: true };
+  }
+
+  try {
+    const size = utf8Length(JSON.stringify(log));
+    if (size > limit) {
+      return {
+        ok: false,
+        reason: 'payload-too-large',
+        details: { size, limit },
+      };
+    }
+  } catch {
+    return {
+      ok: false,
+      reason: 'payload-serialization-failed',
+    };
+  }
+
+  return { ok: true };
+};
+
 export const createLogger = (options: LoggerOptions): Logger => {
   const level = options.level ?? 'info';
   const storage: StorageLike =
@@ -159,6 +191,10 @@ export const createLogger = (options: LoggerOptions): Logger => {
     maxDelayMs: options.batch?.maxDelayMs ?? 10_000,
   };
   const autoFlush = options.autoFlush ?? true;
+  const payloadGuard: PayloadOptions = {
+    maxRecordSizeBytes:
+      options.payload?.maxRecordSizeBytes ?? 64 * 1024,
+  };
   const eventHub = createEventHub();
 
   let flushTimer: ReturnType<typeof setTimeout> | undefined;
@@ -323,6 +359,24 @@ export const createLogger = (options: LoggerOptions): Logger => {
       const allowed = await sampler(candidate);
       if (!allowed) {
         notify({ type: 'dropped', log: candidate, reason: 'sampled-out' });
+        return;
+      }
+
+      const payloadCheck = enforcePayloadLimits(candidate, payloadGuard);
+      if (!payloadCheck.ok) {
+        options.onError?.(
+          new Error(
+            payloadCheck.reason === 'payload-too-large'
+              ? `[Ayllu] Log record exceeded maxRecordSizeBytes (${payloadCheck.details?.size ?? 0}B > ${payloadCheck.details?.limit ?? 0}B)`
+              : `[Ayllu] Failed to serialise log record for payload guard (${payloadCheck.reason})`
+          ),
+          candidate
+        );
+        notify({
+          type: 'dropped',
+          log: candidate,
+          reason: payloadCheck.reason,
+        });
         return;
       }
 
