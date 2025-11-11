@@ -60,6 +60,32 @@ Each package README documents configuration, exported APIs, and extension points
 - **Observer / Pub-Sub** – listeners react to lifecycle events (queued, flushed, failed) for devtools and analytics.
 - **Proxy Pattern** – example Next.js API route forwards logs to vendors without exposing secrets on the client.
 
+## Security & Privacy Guardrails
+
+- **Plain-object sanitisation** – payloads passed as `context`, `enriched` data, or policies are coerced into prototype-free objects to avoid prototype pollution.
+- **Payload guard** – logs exceeding the configured UTF‑8 size limit (64&nbsp;KiB by default) are dropped before reaching storage or transports.
+- **Schema-first validation** – provide a Zod schema to `createLogger` to reject malformed or unexpected payloads early.
+- **Policy layering** – redact, truncate, or drop sensitive content before it is ever persisted.
+- **Transport signatures & proxying** – example apps validate HMAC-like signatures before forwarding batches to vendors.
+
+```ts
+import { createLogger, defaultPolicies } from '@ayllu/core';
+import { createHttpTransport } from '@ayllu/transport-http';
+
+const logger = createLogger({
+  level: 'info',
+  transport: createHttpTransport({ url: '/api/logs' }),
+  policies: defaultPolicies,
+  schema: logSchema,
+  payload: {
+    // Drop any record that serialises above 48 KiB.
+    maxRecordSizeBytes: 48_000,
+  },
+});
+```
+
+> Set `maxRecordSizeBytes` to `Infinity` to disable the guard, or tighten the limit for highly constrained environments.
+
 ## Getting Started
 
 ```sh
