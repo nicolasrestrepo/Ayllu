@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
     "changeset": "changeset",
     "version-packages": "pnpm exec changeset version && pnpm install --lockfile-only",
     "publish-packages": "pnpm exec changeset publish"

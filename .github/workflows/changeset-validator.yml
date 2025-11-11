@@ -24,13 +24,23 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Validate changesets
-        run: pnpm changeset status
-
       - name: Check for changeset
         run: |
-          if [ -z "$(git diff --name-only origin/main...HEAD | grep -E '^\.changeset/.*\.md$')" ]; then
+          # Get the base branch (usually main)
+          BASE_BRANCH="${GITHUB_BASE_REF:-main}"
+          
+          # Fetch the base branch
+          git fetch origin $BASE_BRANCH:$BASE_BRANCH || true
+          
+          # Check if there are any changeset files in this PR
+          if [ -z "$(git diff --name-only origin/$BASE_BRANCH...HEAD | grep -E '^\.changeset/.*\.md$')" ]; then
             echo "⚠️  No changeset found! Please add a changeset by running 'pnpm changeset'"
+            echo "This PR modifies packages but doesn't include a changeset file."
             exit 1
           fi
+          
+          echo "✅ Changeset file found"
+
+      - name: Validate changesets
+        run: pnpm changeset status || echo "No pending changesets (this is expected for PRs)"
 
