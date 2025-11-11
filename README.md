@@ -86,6 +86,17 @@ const logger = createLogger({
 
 > Set `maxRecordSizeBytes` to `Infinity` to disable the guard, or tighten the limit for highly constrained environments.
 
+## Releasing Packages
+
+The repository uses [Changesets](https://github.com/changesets/changesets) to coordinate versions across the workspace.
+
+1. **Record changes** – run `pnpm changeset` and follow the prompts to choose affected packages and bump type (patch/minor/major). A markdown file is created under `.changeset/`.
+2. **Update versions** – once the PR is ready, execute `pnpm version-packages`. This applies the pending changesets, bumps `package.json` versions, and refreshes the lockfile.
+3. **Publish** – after merging to `main`, run `pnpm publish-packages` to publish every package with pending releases to npm. Packages are published with public access.
+4. **Git tags** – Changesets will tag releases automatically when used in CI. If running locally, push tags via `git push --follow-tags`.
+
+> Tip: CI can automate steps 2–3 using the Changesets action. Locally you can still publish with `npm publish` or `pnpm publish --filter <pkg>` if you prefer manual control.
+
 ## Getting Started
 
 ```sh

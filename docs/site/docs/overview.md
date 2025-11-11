@@ -23,6 +23,15 @@ Ayllu is a frontend-first observability SDK that unifies logging, batching, priv
 - **Layered policies** – redact, truncate, or drop sensitive content before persistence or transport.
 - **Signed proxy endpoints** – the sample Next.js app validates signatures before shipping logs upstream.
 
+## Release workflow
+
+The monorepo ships with [Changesets](https://github.com/changesets/changesets) preconfigured for public npm publishing:
+
+1. `pnpm changeset` – describe changes and bump types for affected packages.
+2. `pnpm version-packages` – apply pending changesets, bump versions, and refresh the lockfile.
+3. `pnpm publish-packages` – publish all unreleased packages to npm with public access (pnpm/yarn/npm clients all target the same registry).
+4. Push with tags (`git push --follow-tags`) so consumers receive the release metadata.
+
 ## Package map
 
 | Package | Purpose |

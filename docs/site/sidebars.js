@@ -21,6 +21,7 @@ const sidebars = {
       items: ['ayllu-core', 'transport-http', 'storage-indexeddb', 'ayllu-react'],
     },
     'example-app',
+    'release-guide',
   ],
 };
 
