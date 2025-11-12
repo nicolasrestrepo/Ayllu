@@ -1,7 +1,20 @@
-import { transportHttp } from './transport-http';
+import { createHttpTransport, HttpTransportError } from './transport-http';
 
 describe('transportHttp', () => {
-  it('should work', () => {
-    expect(transportHttp()).toEqual('transport-http');
+  it('should export createHttpTransport', () => {
+    expect(typeof createHttpTransport).toBe('function');
+  });
+
+  it('should export HttpTransportError', () => {
+    expect(HttpTransportError).toBeDefined();
+  });
+
+  it('should create an http transport instance', () => {
+    const transport = createHttpTransport({
+      url: 'https://example.com/logs',
+    });
+    expect(transport).toBeDefined();
+    expect(typeof transport.send).toBe('function');
+    expect(typeof transport.healthy).toBe('function');
   });
 });
