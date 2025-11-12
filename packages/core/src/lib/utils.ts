@@ -6,6 +6,31 @@ export const cloneDeep = <T>(value: T): T => {
   return JSON.parse(JSON.stringify(value)) as T;
 };
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === null || prototype === Object.prototype;
+};
+
+const sanitizePlainRecord = (
+  value: Record<string, unknown>
+): Record<string, unknown> => {
+  const blockedKeys = new Set(['__proto__', 'prototype', 'constructor']);
+  const output: Record<string, unknown> = {};
+
+  for (const [key, entry] of Object.entries(value)) {
+    if (blockedKeys.has(key)) {
+      continue;
+    }
+    output[key] = entry;
+  }
+
+  return output;
+};
+
 export const getByPath = (source: unknown, path: string): unknown => {
   if (typeof source !== 'object' || source === null) {
     return undefined;
@@ -70,10 +95,13 @@ export const removeByPath = (
 export const ensureRecord = (
   value: unknown,
   fallback: Record<string, unknown> = {}
-): Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : fallback;
+): Record<string, unknown> => {
+  if (!isPlainObject(value)) {
+    return fallback;
+  }
+
+  return sanitizePlainRecord(value);
+};
 
 export const mergeContexts = (
   base: Record<string, unknown>,
@@ -132,5 +160,17 @@ export const withTimeout = async <T>(
       clearTimeout(timer);
     }
   }
+};
+
+export const utf8Length = (input: string): number => {
+  if (typeof TextEncoder === 'function') {
+    return new TextEncoder().encode(input).byteLength;
+  }
+
+  if (typeof Buffer === 'function') {
+    return Buffer.byteLength(input, 'utf8');
+  }
+
+  return input.length;
 };
 

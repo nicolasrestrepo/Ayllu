@@ -11,6 +11,7 @@ The repository ships with `examples/next-app`, a Next.js 15 (App Router) demo th
 - **Client provider** – `AppProviders` (in `src/app/providers.tsx`) creates a logger with:
   - Zod schema validation.
   - Privacy policies that redact emails and tokens.
+  - Payload guard that drops records larger than 48&nbsp;KiB before they hit storage or the network.
   - IndexedDB storage with AES-GCM encryption when WebCrypto is present.
   - HTTP transport targeting the `/api/logs` proxy and a health check endpoint.
 - **Secure proxy** – `src/app/api/logs/route.ts` validates signatures, runs schema validation server-side, and demonstrates where vendor forwarding logic would live.

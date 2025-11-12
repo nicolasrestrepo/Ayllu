@@ -200,6 +200,10 @@ const SecurityCallouts = () => (
         Privacy policies redact tokens and emails prior to persistence or
         transport.
       </li>
+      <li>
+        Payload guard drops records larger than 48&nbsp;KB before they reach
+        storage or transport.
+      </li>
       <li>IndexedDB payloads encoded (AES-GCM when WebCrypto is available).</li>
       <li>
         HTTP transport targets a proxy endpoint that validates signatures before

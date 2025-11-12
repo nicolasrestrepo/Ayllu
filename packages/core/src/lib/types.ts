@@ -108,6 +108,14 @@ export type LoggerEventListener<T extends LoggerEventType = LoggerEventType> = (
   event: LoggerEvent<T>
 ) => void;
 
+export interface PayloadOptions {
+  /**
+   * Maximum allowed UTF-8 size for a single log record before it is dropped.
+   * Defaults to 64 KiB. Use `Infinity` to disable the guard.
+   */
+  maxRecordSizeBytes?: number;
+}
+
 export interface LoggerOptions {
   level?: LogLevel;
   transport: Transport;
@@ -128,6 +136,7 @@ export interface LoggerOptions {
   browserHooks?: boolean;
   clock?: () => number;
   idGenerator?: () => string;
+  payload?: PayloadOptions;
 }
 
 export interface Logger {

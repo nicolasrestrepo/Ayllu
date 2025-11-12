@@ -60,6 +60,43 @@ Each package README documents configuration, exported APIs, and extension points
 - **Observer / Pub-Sub** – listeners react to lifecycle events (queued, flushed, failed) for devtools and analytics.
 - **Proxy Pattern** – example Next.js API route forwards logs to vendors without exposing secrets on the client.
 
+## Security & Privacy Guardrails
+
+- **Plain-object sanitisation** – payloads passed as `context`, `enriched` data, or policies are coerced into prototype-free objects to avoid prototype pollution.
+- **Payload guard** – logs exceeding the configured UTF‑8 size limit (64&nbsp;KiB by default) are dropped before reaching storage or transports.
+- **Schema-first validation** – provide a Zod schema to `createLogger` to reject malformed or unexpected payloads early.
+- **Policy layering** – redact, truncate, or drop sensitive content before it is ever persisted.
+- **Transport signatures & proxying** – example apps validate HMAC-like signatures before forwarding batches to vendors.
+
+```ts
+import { createLogger, defaultPolicies } from '@ayllu/core';
+import { createHttpTransport } from '@ayllu/transport-http';
+
+const logger = createLogger({
+  level: 'info',
+  transport: createHttpTransport({ url: '/api/logs' }),
+  policies: defaultPolicies,
+  schema: logSchema,
+  payload: {
+    // Drop any record that serialises above 48 KiB.
+    maxRecordSizeBytes: 48_000,
+  },
+});
+```
+
+> Set `maxRecordSizeBytes` to `Infinity` to disable the guard, or tighten the limit for highly constrained environments.
+
+## Releasing Packages
+
+The repository uses [Changesets](https://github.com/changesets/changesets) to coordinate versions across the workspace.
+
+1. **Record changes** – run `pnpm changeset` and follow the prompts to choose affected packages and bump type (patch/minor/major). A markdown file is created under `.changeset/`.
+2. **Update versions** – once the PR is ready, execute `pnpm version-packages`. This applies the pending changesets, bumps `package.json` versions, and refreshes the lockfile.
+3. **Publish** – after merging to `main`, run `pnpm publish-packages` to publish every package with pending releases to npm. Packages are published with public access.
+4. **Git tags** – Changesets will tag releases automatically when used in CI. If running locally, push tags via `git push --follow-tags`.
+
+> Tip: CI can automate steps 2–3 using the Changesets action. Locally you can still publish with `npm publish` or `pnpm publish --filter <pkg>` if you prefer manual control.
+
 ## Getting Started
 
 ```sh
@@ -89,6 +126,16 @@ pnpm nx serve examples-next-app # start the Next.js demo (see example README)
 4. Storage queues logs (IndexedDB or memory).
 5. Batcher flushes to the selected transport with retry + backoff.
 6. Transport forwards data to a proxy endpoint (`/api/logs` in the Next.js example). The proxy can enforce authentication, rate limiting, or vendor fan-out.
+
+## CI/CD & Releases
+
+The repository uses [Changesets](https://github.com/changesets/changesets) for version management and GitHub Actions for automation:
+
+- **CI** – Lints, tests, and builds on every PR
+- **Changeset validation** – Ensures PRs include versioning information
+- **Automated releases** – Creates version PRs and publishes to npm on merge
+
+See the [Release Guide](docs/site/docs/release-guide.md) for detailed instructions on versioning and publishing packages.
 
 ## Contributing & Roadmap
 

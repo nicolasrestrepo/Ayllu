@@ -78,7 +78,7 @@ const createStorage = () => {
         if (typeof crypto !== 'undefined' && crypto.subtle) {
           const encoder = new TextEncoder();
           const data = encoder.encode(payload);
-          const keyMaterial = encoder.encode('ayllu-demo-secret');
+            const keyMaterial = encoder.encode('ayllu-demo-secret');
           const key = await crypto.subtle.importKey(
             'raw',
             keyMaterial,
@@ -183,6 +183,9 @@ export const AppProviders = ({ children }: { children: React.ReactNode }) => {
         policies: demoPolicies,
         sampler,
         schema: logSchema,
+        payload: {
+          maxRecordSizeBytes: 48_000,
+        },
         enrichers: [
           () => ({
             environment: process.env.NODE_ENV ?? 'development',

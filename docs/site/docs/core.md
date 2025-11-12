@@ -48,6 +48,13 @@ The logger exposes level-specific methods (`debug`, `info`, `warn`, `error`), a 
 | `schema` | Optional [Zod](https://zod.dev) schema enforced before enrichment/policies. |
 | `batch` | `{ size, flushIntervalMs, maxAttempts, baseDelayMs, maxDelayMs }` controls batching & retries. |
 | `browserHooks` | Toggle automatic flush on `pagehide`/`beforeunload` (enabled by default). |
+| `payload` | `{ maxRecordSizeBytes }` drops logs whose UTF-8 serialisation exceeds the limit (defaults to 64&nbsp;KiB). |
+
+## Payload guard
+
+- Every context or enriched payload is coerced into a prototype-free object, preventing prototype pollution.
+- Set `payload.maxRecordSizeBytes` to enforce a hard cap on individual records. Logs above the limit are dropped (`reason: "payload-too-large"`), and `onError` is notified.
+- Use `Infinity` to disable the guard or a smaller value when bandwidth/storage are constrained.
 
 ## Privacy policies
 
